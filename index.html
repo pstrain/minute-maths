@@ -127,7 +127,6 @@
             font-size: 2em;
             transform: rotateY(180deg);
             transition: left 1s linear;
-            left: calc(0% - 1em);
         }
         .finishFlag{
           margin-left: auto;
@@ -315,7 +314,7 @@
                 timerSpan.textContent = timeLeft;
 
                 const progress = ((MAX_TIME - timeLeft) / MAX_TIME) * 100;
-                girlCycling.style.left = `calc(${progress}% - 1em)`; // Adjusting position smoothly based on time left
+                girlCycling.style.left = `calc(${progress}%)`; // Adjusting position smoothly based on time left
 
                 if (timeLeft <= 0) {
                     clearInterval(countdownInterval);
