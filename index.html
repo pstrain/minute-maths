@@ -81,7 +81,7 @@
             width: 100%;
             max-width: 500px;
             height: 40px;
-            margin: 20px auto;
+            margin: 0px auto;
             position: relative;
         }
         .step {
@@ -91,7 +91,6 @@
             margin: 0 2px;
         }
         .step.active {
-            background-color: #ff6347;
         }
         #cat {
             font-size: 2em;
@@ -107,7 +106,7 @@
             width: 100%;
             max-width: 500px;
             height: 50px;
-            margin: 20px auto;
+            margin: 00px auto;
             position: relative;
             overflow: hidden;
         }
@@ -127,7 +126,6 @@
             font-size: 2em;
             transform: rotateY(180deg);
             transition: left 1s linear;
-            left: calc(0% - 1em);
         }
         .finishFlag{
           margin-left: auto;
@@ -311,7 +309,7 @@
                 timerSpan.textContent = timeLeft;
 
                 const progress = ((MAX_TIME - timeLeft) / MAX_TIME) * 100;
-                girlCycling.style.left = `calc(${progress}% - 1em)`; // Adjusting position smoothly based on time left
+                girlCycling.style.left = `calc(${progress}%)`; // Adjusting position smoothly based on time left
 
                 if (timeLeft <= 0) {
                     clearInterval(countdownInterval);
