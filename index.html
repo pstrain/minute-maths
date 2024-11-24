@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minute Maths</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+            color: #333;
+            padding: 20px;
+        }
+        #settings {
+            margin: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        h1 {
+            font-size: 3em;
+            color: #ff6347;
+        }
+        p {
+            font-size: 1.5em;
+        }
+        button {
+            background-color: #ffcc00;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            cursor: pointer;
+            border-radius: 10px;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+        button:hover {
+            background-color: #ffa500;
+        }
+        .sum-box {
+            margin: 20px;
+            font-size: 3em;
+            color: #ff6347;
+        }
+        .input-box {
+            font-size: 2em;
+            padding: 10px;
+            width: 100px;
+            text-align: center;
+            border-radius: 10px;
+            border: 2px solid #333;
+        }
+        .feedback {
+            margin: 10px;
+            font-size: 2em;
+        }
+        .correct {
+            color: #28a745;
+        }
+        .incorrect {
+            color: #dc3545;
+        }
+        .results {
+            margin: 20px;
+            font-size: 1.5em;
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .progress {
+            font-size: 1.5em;
+            margin-top: 10px;
+        }
+        .steps-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            height: 40px;
+            margin: 20px auto;
+            position: relative;
+        }
+        .step {
+            width: 5%;
+            height: 20px;
+            border-radius: 50%;
+            margin: 0 2px;
+        }
+        .step.active {
+            background-color: #ff6347;
+        }
+        #cat {
+            font-size: 2em;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            transform: rotateY(180deg);
+            transition: transform 0.5s ease;
+        }
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            height: 50px;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-indicator::after {
+            content: '';
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #333;
+        }
+        #girlCycling {
+            position: absolute;
+            left: 0;
+            bottom: 15px;
+            font-size: 2em;
+            transform: rotateY(180deg);
+            transition: left 1s linear;
+            left: calc(0% - 1em);
+        }
+        .finishFlag{
+          margin-left: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Minute Maths</h1>
+    <p>Complete as many sums as possible in one minute.</p>
+    
+    <details id="settings">
+        <summary>Settings</summary>
+        <div>
+            <div class="settings">
+                <h2>Settings</h2>
+                <label class="settingsLabel" for="operationChoice">Choose: </label>
+                <select class="settingsField" id="operationChoice">
+                    <option value="both">Addition and subtraction</option>
+                    <option value="addition">Addition</option>
+                    <option value="subtraction">Subtraction</option>
+                </select>
+            </div>
+            <div class="settings">
+                <label class="settingsLabel" for="timeChoice">Time (seconds): </label>
+                <input class="settingsField" type="number" id="timeChoice" value="60" min="10" max="300" style="font-size: 1em; padding: 5px;">
+            </div>
+            <div class="settings">
+                <label class="settingsLabel" for="questionChoice">Questions: </label>
+                <input class="settingsField" type="number" id="questionChoice" value="20" min="5" max="50" style="font-size: 1em; padding: 5px;">
+            </div>
+            <div class="settings">
+                <label class="settingsLabel" for="nameChoice">Name: </label>
+                <input class="settingsField" type="text" id="nameChoice" value="Caitlin" style="font-size: 1em; padding: 5px;">
+            </div>
+        </div>
+    </details>
+    <button id="startButton">Start</button>
+    <div id="highScore" class="hidden" style="margin-top: 20px;">
+        <table style="margin: 0 auto; border-collapse: collapse; width: 50%;">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid #333; padding: 10px; background-color: #ffcc00; color: #fff;">Name</th>
+                    <th style="border: 1px solid #333; padding: 10px; background-color: #ffcc00; color: #fff;">Score</th>
+                    <th style="border: 1px solid #333; padding: 10px; background-color: #ffcc00; color: #fff;">Date</th>
+                </tr>
+            </thead>
+            <tbody id="highScoreTable">
+                <!-- High Scores will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="game" class="hidden">
+        <div class="progress-indicator">
+            <div id="girlCycling">🚴‍♀️</div>
+            <span id="finishCycling" class="finishFlag" style="position: absolute; right: 0; bottom: 15px;">🏁</span>
+        </div>
+        <div class="steps-container" id="stepsContainer">
+            <span class="finishFlag">🏁</span>
+            <div id="cat">🐈</div>
+        </div>
+        <div>Time Left: <span id="timer">60</span> seconds</div>
+        <div class="progress">Progress: <span id="progress">0</span></div>
+        <div class="sum-box" id="currentSum"></div>
+        <input type="number" id="answerInput" class="input-box" autocomplete="off">
+        <div id="feedback" class="feedback"></div>
+    </div>
+
+    <div id="results" class="hidden"></div>
+
+    <script>
+        const startButton = document.getElementById('startButton');
+        const gameDiv = document.getElementById('game');
+        const currentSumDiv = document.getElementById('currentSum');
+        const timerSpan = document.getElementById('timer');
+        const answerInput = document.getElementById('answerInput');
+        const feedbackDiv = document.getElementById('feedback');
+        const resultsDiv = document.getElementById('results');
+        const highScoreDiv = document.getElementById('highScore');
+        const progressSpan = document.getElementById('progress');
+        const stepsContainer = document.getElementById('stepsContainer');
+        const girlCycling = document.getElementById('girlCycling');
+        let MAX_SUMS;
+
+        let countdownInterval;
+        let currentSum;
+        let correctAnswer;
+        let totalSums = 0;
+        let userScore = 0;
+        let completedSums = [];
+        let MAX_TIME = 60;
+        let catPosition = 0;
+
+        function generateSum() {
+            let num1 = Math.floor(Math.random() * 10);
+            let num2 = Math.floor(Math.random() * 10);
+            const operationChoice = document.getElementById('operationChoice').value;
+            let operation;
+
+            if (operationChoice === 'addition') {
+                operation = '+';
+            } else if (operationChoice === 'subtraction') {
+                operation = '-';
+            } else {
+                operation = Math.random() < 0.5 ? '+' : '-';
+            }
+
+            if (operation === '+') {
+                while (num1 + num2 >= 10) {
+                    num1 = Math.floor(Math.random() * 10);
+                    num2 = Math.floor(Math.random() * 10);
+                }
+                correctAnswer = num1 + num2;
+            } else {
+                while (num1 - num2 <= 0) {
+                    num1 = Math.floor(Math.random() * 10);
+                    num2 = Math.floor(Math.random() * 10);
+                }
+                correctAnswer = num1 - num2;
+            }
+
+            currentSum = `${num1} ${operation} ${num2}`;
+            currentSumDiv.textContent = currentSum;
+        }
+
+        function initializeSteps() {
+            stepsContainer.innerHTML = '';
+            for (let i = 0; i < MAX_SUMS; i++) {
+                const step = document.createElement('div');
+                step.classList.add('step');
+                stepsContainer.appendChild(step);
+            }
+            const cat = document.createElement('div');
+            cat.id = 'cat';
+            cat.textContent = '🐈';
+            stepsContainer.appendChild(cat);
+            catPosition = 0;
+        }
+
+        function moveCatUp() {
+            if (catPosition < MAX_SUMS) {
+                const steps = document.querySelectorAll('.step');
+                if (steps[catPosition]) {
+                    steps[catPosition].classList.add('active');
+                }
+                const cat = document.getElementById('cat');
+                const progressWidth = stepsContainer.offsetWidth;
+                const stepWidth = progressWidth / MAX_SUMS;
+                cat.style.transform = `translateX(${catPosition * stepWidth}px) rotateY(180deg)`;
+                catPosition++;
+            }
+        }
+
+        function startGame() {
+            document.getElementById('settings').classList.add('hidden');
+            MAX_SUMS = parseInt(document.getElementById('questionChoice').value);
+            MAX_TIME = parseInt(document.getElementById('timeChoice').value);
+            userScore = 0;
+            totalSums = 0;
+            completedSums = [];
+            gameDiv.classList.remove('hidden');
+            resultsDiv.classList.add('hidden');
+            highScoreDiv.classList.add('hidden');
+            startButton.classList.add('hidden');
+            document.querySelectorAll('.settings').forEach(setting => setting.classList.add('hidden'));
+            timerSpan.textContent = MAX_TIME;
+            progressSpan.textContent = `0 / ${MAX_SUMS}`;
+            answerInput.value = '';
+            feedbackDiv.textContent = '';
+            answerInput.disabled = false;
+            answerInput.focus();
+            initializeSteps();
+            generateSum();
+            startTimer();
+        }
+
+        function startTimer() {
+            let timeLeft = MAX_TIME;
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                timerSpan.textContent = timeLeft;
+
+                const progress = ((MAX_TIME - timeLeft) / MAX_TIME) * 100;
+                girlCycling.style.left = `calc(${progress}% - 1em)`; // Adjusting position smoothly based on time left
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseInt(answerInput.value);
+            const correct = userAnswer === correctAnswer;
+
+            if (correct) {
+                userScore++;
+                moveCatUp();
+                feedbackDiv.innerHTML = '<span class="correct">✔ Correct!</span>';
+            } else {
+                feedbackDiv.innerHTML = `<span class="incorrect">✘ Incorrect! (${correctAnswer})</span>`;
+            }
+
+            completedSums.push(`${currentSum} = ${userAnswer} ${correct ? '✔' : `✘ (${correctAnswer})`}`);
+
+            totalSums++;
+            progressSpan.textContent = `${totalSums} / ${MAX_SUMS}`;
+
+            if (totalSums >= MAX_SUMS) {
+                clearInterval(countdownInterval);
+                endGame();
+                return;
+            }
+
+            setTimeout(() => {
+                feedbackDiv.textContent = '';
+                answerInput.value = '';
+                generateSum();
+            }, 250);
+        }
+
+        function endGame() {
+            document.getElementById('settings').classList.remove('hidden');
+            answerInput.disabled = true;
+            gameDiv.classList.add('hidden');
+            resultsDiv.classList.remove('hidden');
+
+            let resultHtml = `<h2>Your Score: ${userScore}</h2>`;
+            resultHtml += '<div>Completed Sums:</div><div>';
+            completedSums.forEach(sum => {
+                resultHtml += `<p>${sum}</p>`; 
+            });
+            resultHtml += '</div>';
+
+            resultsDiv.innerHTML = resultHtml;
+
+            // Update high score
+            const currentDate = new Date().toLocaleDateString();
+            let highScores = JSON.parse(localStorage.getItem('minuteMathsHighScores')) || [];
+            const playerName = document.getElementById('nameChoice').value;
+            highScores.push({ name: playerName, score: userScore, date: currentDate });
+            highScores.sort((a, b) => b.score - a.score);
+            if (highScores.length > 5) highScores = highScores.slice(0, 5);
+            localStorage.setItem('minuteMathsHighScores', JSON.stringify(highScores));
+            updateHighScoreTable(highScores);
+            highScoreDiv.classList.remove('hidden');
+            startButton.classList.remove('hidden');
+            document.querySelectorAll('.settings').forEach(setting => setting.classList.remove('hidden'));
+        }
+
+        startButton.addEventListener('click', startGame);
+        answerInput.addEventListener('input', checkAnswer);
+
+        // Load high score on start
+        document.addEventListener('DOMContentLoaded', () => {
+            let highScores = JSON.parse(localStorage.getItem('minuteMathsHighScores')) || [];
+            updateHighScoreTable(highScores);
+            highScoreDiv.classList.remove('hidden');
+        });
+
+        function updateHighScoreTable(highScores) {
+            const highScoreTable = document.getElementById('highScoreTable');
+            highScoreTable.innerHTML = '';
+            highScores.forEach((entry) => {
+                const row = document.createElement('tr');
+                const nameCell = document.createElement('td');
+                nameCell.textContent = entry.name;
+                nameCell.style.border = '1px solid #333';
+                nameCell.style.padding = '10px';
+                const scoreCell = document.createElement('td');
+                scoreCell.textContent = entry.score;
+                scoreCell.style.border = '1px solid #333';
+                scoreCell.style.padding = '10px';
+                const dateCell = document.createElement('td');
+                dateCell.textContent = entry.date;
+                dateCell.style.border = '1px solid #333';
+                dateCell.style.padding = '10px';
+                row.appendChild(nameCell);
+                row.appendChild(scoreCell);
+                row.appendChild(dateCell);
+                highScoreTable.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>
